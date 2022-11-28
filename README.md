@@ -1,0 +1,1 @@
+# FoodPlace-MultiVendor-Django
