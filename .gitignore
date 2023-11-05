@@ -106,7 +106,7 @@ celerybeat.pid
 .venv
 env/
 venv/
-media/vendor/license
+media/vendor/
 ENV/
 env.bak/
 venv.bak/
