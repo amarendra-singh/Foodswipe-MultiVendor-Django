@@ -4,8 +4,24 @@ from .utils import detectUser
 from vendor.forms import VendorForm
 from . forms import UserForm
 from . models import User,UserProfile
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
+
+
 # Create your views here.
+
+def check_role_vendor(user):
+    if user.role == 1:
+        return True
+    else:
+        raise PermissionDenied
+
+def check_role_customer(user):
+    if user.role == 2:
+        return True
+    else:
+        raise PermissionDenied
+
 def home(request):
     return render(request,'home.html')
 
@@ -109,10 +125,12 @@ def logout(request):
     return redirect('login')
 
 @login_required(login_url='login')
+@user_passes_test(check_role_customer)
 def customerDashboard(request):
     return render(request, 'accounts/customerDashboard.html')
 
 @login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     return render(request, 'accounts/vendorDashboard.html')
 
