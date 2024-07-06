@@ -10,7 +10,9 @@ class CustomUserAdmin(UserAdmin):
     list_filter=()
     fieldsets=()
 
+class UserProfileAdmin(admin.ModelAdmin):
+    readonly_fields = ["latitude", "longitude"]
 
 
 admin.site.register(User,CustomUserAdmin)
-admin.site.register(UserProfile)
+admin.site.register(UserProfile,UserProfileAdmin)
