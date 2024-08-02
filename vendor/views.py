@@ -1,7 +1,11 @@
 from django.shortcuts import render,redirect
 from accounts.forms import UserProfileForm
 from .forms import VendorForm
+<<<<<<< HEAD
 from menu.forms import CategoryForm, FoodItemForm
+=======
+from menu.forms import CategoryForm
+>>>>>>> e8a54bb67064b1613458a1ab989ea24119096410
 from django.shortcuts import get_object_or_404
 from accounts.models import UserProfile
 from accounts.views import check_role_vendor
@@ -114,6 +118,7 @@ def delete_category(request, pk=None):
     category = get_object_or_404(Category, pk=pk)
     category.delete()
     messages.success(request, "Category has been deleted successfully")
+<<<<<<< HEAD
     return redirect('menu_builder')
 
 @login_required(login_url='login')
@@ -176,3 +181,6 @@ def delete_food(request, pk=None):
     food.delete()
     messages.success(request, 'Food Item has been deleted successfully!')
     return redirect('fooditems_by_category', food.category.id)
+=======
+    return redirect('menu_builder')
+>>>>>>> e8a54bb67064b1613458a1ab989ea24119096410

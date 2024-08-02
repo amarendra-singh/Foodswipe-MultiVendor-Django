@@ -35,9 +35,14 @@ def check_role_customer(user):
         raise PermissionDenied
 
 
+<<<<<<< HEAD
 # def homme(request):
 #     print("hello")
 #     return render(request,'home.html')
+=======
+def home(request):
+    return render(request,'home.html')
+>>>>>>> e8a54bb67064b1613458a1ab989ea24119096410
 
 def registerUser(request):
     if request.user.is_authenticated:
