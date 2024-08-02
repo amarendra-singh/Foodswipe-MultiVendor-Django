@@ -12,28 +12,27 @@ class Vendor(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
 
-    def full_address(self):
-        return f'{self.address_line_1}, {self.address_line_2}'
 
     def __str__(self):
         return self.vendor_name
     
     def save(self, *args, **kwargs):
         if self.pk is not None:
-            original = Vendor.objects.get(pk=self.pk)
-
-            if original.is_approved != self.is_approved:
+            # Update
+            orig = Vendor.objects.get(pk=self.pk)
+            if orig.is_approved != self.is_approved:
                 mail_template = 'accounts/emails/admin_approval_email.html'
-                context ={
+                context = {
                     'user': self.user,
                     'is_approved': self.is_approved,
+                    'to_email': self.user.email,
                 }
-
                 if self.is_approved == True:
-                    mail_subject = 'Congratulations! Your restaurant has been approved.'
-                    send_notification(mail_subject, mail_template,context)
+                    # Send notification email
+                    mail_subject = "Congratulations! Your restaurant has been approved."
+                    send_notification(mail_subject, mail_template, context)
                 else:
-                    mail_subject = 'Sorry, Your restaurant has not been approved'
-                    send_notification(mail_subject, mail_template,context)
-
+                    # Send notification email
+                    mail_subject = "We're sorry! You are not eligible for publishing your food menu on our marketplace."
+                    send_notification(mail_subject, mail_template, context)
         return super(Vendor, self).save(*args, **kwargs)

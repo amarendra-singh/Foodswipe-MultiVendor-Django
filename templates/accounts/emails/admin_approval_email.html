@@ -1,4 +1,5 @@
 {% autoescape off %}
+
 <body style="background-color:grey">
 
     <!-- Complete Email template -->
@@ -45,13 +46,13 @@
                             border: none; 
                             background-color: #DDF2FD;"> 
 
-                            {% if is_approved %}
-                                Congratulations! Your restaurant has been approved.
+                        {% if is_approved %}
+                            Congratulations! Your restaurant has been approved.
 
-                            {% else %}
-                                Sorry, Your restaurant has not been approved.
+                        {% else %}
+                            Sorry, Your restaurant has not been approved.
 
-                            {% endif %}
+                        {% endif %}
 
                         <p class="data" style="text-align: justify-all; 
                                 align-items: center; 
@@ -66,4 +67,5 @@
     
     
 </body>
+
 {% endautoescape %}

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'vendor',
+    'menu',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +66,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'accounts.context_processors.get_vendor'
+                'accounts.context_processors.get_vendor',
+                'accounts.context_processors.get_google_api',
             ],
         },
     },
@@ -156,22 +158,19 @@ MESSAGE_TAGS = {
     50:'critical',
 }
 
-# #Email Configuration
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_AGE = 300  # 5 minutes
+
+
+
 EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'Food Swipe Marketplace <amarendra.freelance@gmail.com>'
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
-# #AWS Configuration
-# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-
-# #AWS SES
-# #Email Configuration
-# EMAIL_BACKEND='django_ses.SESBackend'
-
-# AWS_SES_REGION_NAME='ap-south-1'
-# AWS_SES_REGION_ENDPOINT='email.ap-south-1.amazonaws.com'
+GOOGLE_API_KEY = config('GOOGLE_API_KEY')
