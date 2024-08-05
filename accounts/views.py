@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
+from django.template.defaultfilters import slugify
 import logging
 logger = logging.getLogger(__name__)
 
@@ -35,14 +36,9 @@ def check_role_customer(user):
         raise PermissionDenied
 
 
-<<<<<<< HEAD
 # def homme(request):
 #     print("hello")
 #     return render(request,'home.html')
-=======
-def home(request):
-    return render(request,'home.html')
->>>>>>> e8a54bb67064b1613458a1ab989ea24119096410
 
 def registerUser(request):
     if request.user.is_authenticated:
@@ -88,7 +84,7 @@ def registerUser(request):
 def registerVendor(request):
     if request.user.is_authenticated:
         messages.warning(request, "You are already logged in")
-        return redirect('dashboard') 
+        return redirect('myaccount') 
     if request.method == 'POST':
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -105,6 +101,8 @@ def registerVendor(request):
 
             vendor = v_form.save(commit=False)
             vendor.user = user
+            vendor_name=v_form.cleaned_data['vendor_name']
+            vendor.vendor_slug = slugify(vendor_name) +'-'+ str(user.id)
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
