@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from vendor.models import Vendor
 from menu.models import Category, FoodItem
-from django.db.models import Prefetch
+from django.db.models import Prefetch,Q
 from marketplace.models import Cart
+
 
 from marketplace.context_processors import get_cart_counter
 
@@ -121,3 +122,14 @@ def search(request):
         longitude = request.GET['lng']
         radius = request.GET['radius']
         keyword = request.GET['keyword']
+
+        fetch_vendors_by_fooditems = FoodItem.objects.filter(food_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+        
+        vendors = Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True))
+        vendor_count = vendors.count()
+        context = {
+            'vendor':vendors,
+            'vendor_count':vendor_count,
+        }
+
+        return render(request, 'marketplace/listings.html', context)
