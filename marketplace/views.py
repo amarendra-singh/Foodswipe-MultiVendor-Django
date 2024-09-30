@@ -7,6 +7,9 @@ from marketplace.models import Cart
 
 
 from marketplace.context_processors import get_cart_counter
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D 
+from django.contrib.gis.db.models.functions import Distance
 
 # Create your views here.
 def marketplace(request):
@@ -126,10 +129,22 @@ def search(request):
         fetch_vendors_by_fooditems = FoodItem.objects.filter(food_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
         
         vendors = Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True))
-        vendor_count = vendors.count()
+
+        if latitude and longitude and radius:
+            pnt = GEOSGeometry('POINT(%s %s)' %(longitude, latitude))
+
+            vendors = Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True),
+            user_profile__location__distance_lte=(pnt, D(km=radius))
+            ).annotate(distance=Distance("user_profile__location", pnt)).order_by("distance")
+
+            for v in vendors:
+                v.kms = round(v.distance.km, 1)
+
+            vendor_count = vendors.count()
         context = {
             'vendor':vendors,
             'vendor_count':vendor_count,
+            'source_location': address,
         }
 
         return render(request, 'marketplace/listings.html', context)
