@@ -1,6 +1,8 @@
 from django.db import models
 from accounts.models import User,UserProfile
 from accounts.utils import send_notification
+from datetime import time
+
 # Create your models here.
 
 class Vendor(models.Model):
@@ -37,3 +39,20 @@ class Vendor(models.Model):
                     mail_subject = "We're sorry! You are not eligible for publishing your food menu on our marketplace."
                     send_notification(mail_subject, mail_template, context)
         return super(Vendor, self).save(*args, **kwargs)
+
+HOUR_OF_DAY_24 = [(time(h,m).strftime('%I:%M:%p'), time(h,m).strftime('%I:%M:%p')) for h in range(0,24) for m in (0,30)]
+class OpeningHour(models.Model):
+    DAYS = [
+        (1, ('Monday')),
+        (2, ('Tuesday')),
+        (3, ('Wednesday')),
+        (4, ('Thursday')),
+        (5, ('Friday')),
+        (6, ('Saturday')),
+        (7, ('Sunday')),
+    ]
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    day = models.IntegerField(choices = DAYS)
+    from_hour = models.CharField()
+    to_hour = models.CharField()
+    is_closed = models.CharField(default=False)
