@@ -1,11 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from vendor.models import Vendor
+from vendor.models import Vendor, OpeningHour
 from menu.models import Category, FoodItem
 from django.db.models import Prefetch,Q
 from marketplace.models import Cart
 
-
+from datetime import date, datetime
 from marketplace.context_processors import get_cart_counter
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D 
@@ -29,6 +29,12 @@ def vendor_detail(request,vendor_slug):
             queryset=FoodItem.objects.filter(is_available=True)
         )
     )
+    
+    opening_hour = OpeningHour.objects.filter(vendor=vendor).order_by('day','-from_hour')
+    today_date = date.today()
+    today = today_date.isoweekday()
+    current_opening_hours = OpeningHour.objects.filter(vendor=vendor, day=today)
+
 
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
@@ -38,7 +44,9 @@ def vendor_detail(request,vendor_slug):
     context = {
         'vendor':vendor,
         'categories':categories,
-        'cart_items':cart_items
+        'cart_items':cart_items,
+        'opening_hour':opening_hour,
+        'current_opening_hours':current_opening_hours,
     }
     return render(request,'marketplace/vendor_detail.html', context)
 
@@ -83,7 +91,7 @@ def decrease_cart(request, food_id):
                     else:
                         check_cart.delete()
                         check_cart.quantity = 0
-                    return JsonResponse({'status': 'Success', 'cart_counter': get_cart_counter(request), 'qty': chkCart.quantity, 'cart_amount': get_cart_amounts(request)})
+                    return JsonResponse({'status': 'Success', 'cart_counter': get_cart_counter(request), 'qty': check_cart.quantity, 'cart_amount': get_cart_amounts(request)})
                 except:
                     return JsonResponse({'status': 'Failed', 'message': 'You do not have this item in your cart!'})
             except:
